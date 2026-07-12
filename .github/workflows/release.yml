@@ -1,0 +1,64 @@
+name: Release
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+concurrency: ${{ github.workflow }}-${{ github.ref }}
+
+permissions:
+  contents: write
+  id-token: write # Required for npm OIDC trusted publishing
+  issues: write
+  pull-requests: write
+
+env:
+  NODE_VERSION: 24
+
+jobs:
+  release:
+    if: github.repository == 'capawesome-team/capacitor-tauri'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Create release pull request or GitHub release
+        id: release-please
+        uses: googleapis/release-please-action@v4
+      - uses: actions/checkout@v4
+        if: ${{ steps.release-please.outputs.release_created }}
+      - uses: actions/setup-node@v4
+        if: ${{ steps.release-please.outputs.release_created }}
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Update npm for OIDC trusted publishing
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: npm install -g npm@latest
+      - if: ${{ steps.release-please.outputs.release_created }}
+        run: npm ci
+      - name: Sync the crate and scaffold versions
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: node scripts/sync-crate-version.mjs
+      - name: Set up Rust
+        if: ${{ steps.release-please.outputs.release_created }}
+        uses: dtolnay/rust-toolchain@stable
+      - name: Install Tauri system dependencies
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libgtk-3-dev librsvg2-dev
+      # The crate is published before the npm package: the npm package's
+      # scaffold depends on the crate version, so a missing crate breaks new
+      # installs while a crate without the npm package is harmless.
+      - name: Publish the capacitor-tauri crate
+        if: ${{ steps.release-please.outputs.release_created }}
+        env:
+          CARGO_REGISTRY_TOKEN: ${{ secrets.CARGO_REGISTRY_TOKEN }}
+        run: |
+          npm run build:shim
+          # --allow-dirty: the version sync and generated bridge.js leave the
+          # working tree modified; the `include` list controls what ships.
+          cargo publish --manifest-path crate/Cargo.toml --allow-dirty
+      - name: Publish to npm
+        if: ${{ steps.release-please.outputs.release_created }}
+        run: npm publish

@@ -1,0 +1,87 @@
+{
+  "name": "@capawesome/capacitor-tauri",
+  "version": "0.0.1",
+  "description": "Capacitor platform for building desktop apps with Tauri.",
+  "main": "dist/runtime/index.js",
+  "types": "dist/types/runtime/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/types/runtime/index.d.ts",
+      "default": "./dist/runtime/index.js"
+    },
+    "./package.json": "./package.json"
+  },
+  "bin": {
+    "capacitor-tauri": "dist/cli/index.js"
+  },
+  "files": [
+    "dist/",
+    "crate/",
+    "templates/"
+  ],
+  "author": "Robin Genz <mail@robingenz.dev>",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/capawesome-team/capacitor-tauri"
+  },
+  "bugs": {
+    "url": "https://github.com/capawesome-team/capacitor-tauri/issues"
+  },
+  "homepage": "https://capawesome.io/",
+  "keywords": [
+    "capacitor",
+    "capacitor-platform",
+    "tauri",
+    "desktop"
+  ],
+  "scripts": {
+    "capacitor:add": "node ./dist/cli/index.js add",
+    "capacitor:copy": "node ./dist/cli/index.js copy",
+    "capacitor:update": "node ./dist/cli/index.js update",
+    "capacitor:open": "node ./dist/cli/index.js open",
+    "capacitor:run": "node ./dist/cli/index.js run",
+    "verify": "npm run build && npm run test",
+    "lint": "npm run eslint && npm run prettier -- --check",
+    "fmt": "npm run eslint -- --fix && npm run prettier -- --write",
+    "eslint": "eslint . --ext ts",
+    "prettier": "prettier \"**/*.{css,html,ts,js}\"",
+    "build": "npm run clean && npm run build:shim && tsc --project tsconfig.build.json && tsc --project tsconfig.types.json && rollup -c rollup.config.mjs",
+    "build:shim": "node ./scripts/build-shim.mjs",
+    "clean": "rimraf ./dist ./build",
+    "test": "vitest run",
+    "prepare": "husky",
+    "prepublishOnly": "npm run build"
+  },
+  "lint-staged": {
+    "**/*.{css,html,ts,js,json}": "prettier --write"
+  },
+  "devDependencies": {
+    "@capacitor/core": "8.0.0",
+    "@ionic/eslint-config": "0.4.0",
+    "@types/node": "24.13.3",
+    "esbuild": "0.25.12",
+    "eslint": "8.57.0",
+    "husky": "9.1.7",
+    "lint-staged": "17.0.5",
+    "prettier": "3.4.2",
+    "rimraf": "6.1.2",
+    "rollup": "4.53.3",
+    "typescript": "5.9.3",
+    "vitest": "4.1.10"
+  },
+  "peerDependencies": {
+    "@tauri-apps/cli": ">=2.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@tauri-apps/cli": {
+      "optional": true
+    }
+  },
+  "eslintConfig": {
+    "extends": "@ionic/eslint-config/recommended"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

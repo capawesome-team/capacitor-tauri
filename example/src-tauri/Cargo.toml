@@ -1,0 +1,20 @@
+[package]
+name = "capacitor-tauri-example"
+version = "0.0.0"
+description = "Capacitor Tauri Example"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+# In-repo example: path dependency on the local crate (users get the
+# published `capacitor-tauri = "0.x"` via the scaffold instead).
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+capacitor-tauri = { path = "../../crate" }
+
+# capacitor:plugins:begin
+tauri-plugin-store = "2"
+# capacitor:plugins:end

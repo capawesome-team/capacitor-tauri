@@ -1,0 +1,17 @@
+[package]
+name = "{{APP_NAME_SLUG}}"
+version = "0.0.0"
+description = "{{APP_NAME}}"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+capacitor-tauri = "0.0"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+
+# capacitor:plugins:begin
+# capacitor:plugins:end

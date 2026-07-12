@@ -1,0 +1,8 @@
+build
+dist
+crate/src/bridge.js
+crate/target
+example/dist
+example/src-tauri/target
+example/src-tauri/gen
+example/src-tauri/src/generated.rs
