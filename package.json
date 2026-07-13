@@ -1,6 +1,6 @@
 {
   "name": "@capawesome/capacitor-tauri",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "Capacitor platform for building desktop apps with Tauri.",
   "main": "dist/runtime/index.js",
   "types": "dist/types/runtime/index.d.ts",
