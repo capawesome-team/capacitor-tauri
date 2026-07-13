@@ -1,5 +1,9 @@
 # Capacitor Tauri Platform
 
+[![npm version](https://img.shields.io/npm/v/@capawesome/capacitor-tauri)](https://www.npmjs.com/package/@capawesome/capacitor-tauri)
+[![npm downloads](https://img.shields.io/npm/dm/@capawesome/capacitor-tauri)](https://www.npmjs.com/package/@capawesome/capacitor-tauri)
+[![license](https://img.shields.io/npm/l/@capawesome/capacitor-tauri)](https://github.com/capawesome-team/capacitor-tauri/blob/main/LICENSE)
+
 Capacitor platform to build, run, and package lean, secure desktop apps for macOS, Windows, and Linux with Tauri.[^1]
 
 <div class="capawesome-z29o10a">
