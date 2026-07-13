@@ -56,6 +56,10 @@ The Tauri platform is typically used to bring an existing Capacitor app to the d
 | ---------------- | ----------------- | ------------- | -------------- |
 | 0.x              | >=8.x.x           | >=2.x.x       | Active support |
 
+## Guides
+
+- [Capacitor Tauri Platform: Lean Desktop Apps](https://capawesome.io/blog/announcing-the-capacitor-tauri-platform/)
+
 ## Supported Plugins
 
 The plugin story has three tiers (see [Honest Limitations](#honest-limitations)):
