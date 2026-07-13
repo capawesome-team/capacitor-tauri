@@ -1,0 +1,6 @@
+## Pull request checklist
+
+Please check if your PR fulfills the following requirements:
+
+- [ ] The changes have been tested successfully.
+- [ ] I have read and followed the [pull request guidelines](https://capawesome.io/docs/contributing/pull-requests/).

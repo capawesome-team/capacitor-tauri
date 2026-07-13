@@ -1,0 +1,4 @@
+contact_links:
+  - name: ❓ Support question
+    url: https://github.com/capawesome-team/capacitor-tauri/discussions
+    about: This issue tracker is not for support questions. Please post your question on GitHub Discussions.
