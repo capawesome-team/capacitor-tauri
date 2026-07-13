@@ -5,31 +5,53 @@ on:
     branches:
       - main
     paths-ignore:
-      - '**.md'
-      - '.vscode/**'
+      - "**.md"
+      - ".vscode/**"
   pull_request:
     paths-ignore:
-      - '**.md'
-      - '.vscode/**'
+      - "**.md"
+      - ".vscode/**"
+  workflow_dispatch:
 
 env:
   NODE_VERSION: 24
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - run: npm ci
-      - run: npm run build
-      - run: npm run test
-      - run: npm run lint
-
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Build package
+        run: npm run build
+      - name: Run tests
+        run: npm run test
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    needs: [build]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+      - name: Install Node.js dependencies
+        run: npm ci
+      - name: Lint package
+        run: npm run lint
   tauri-build:
-    needs: build
+    name: Tauri Build
+    runs-on: ${{ matrix.os }}
+    needs: [build]
     strategy:
       fail-fast: false
       matrix:
@@ -37,16 +59,18 @@ jobs:
           - macos-latest
           - ubuntu-latest
           - windows-latest
-    runs-on: ${{ matrix.os }}
     defaults:
       run:
         working-directory: example
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node.js ${{ env.NODE_VERSION }}
+        uses: actions/setup-node@v4
         with:
           node-version: ${{ env.NODE_VERSION }}
-      - uses: dtolnay/rust-toolchain@stable
+      - name: Set up Rust
+        uses: dtolnay/rust-toolchain@stable
       - name: Install Tauri system dependencies (Linux)
         if: runner.os == 'Linux'
         run: |
