@@ -18,7 +18,7 @@
 
 mod bridge;
 
-use tauri::{Builder, Context, Wry};
+use tauri::{Builder, Context, Manager, Wry};
 
 /// Registers the app's curated plugin crates on the builder. Provided by the
 /// generated `register_plugins` function.
@@ -37,9 +37,17 @@ pub fn run(context: Context, register_plugins: PluginRegistration) {
 /// register additional plugins or hooks before starting the app.
 pub fn builder(register_plugins: PluginRegistration) -> Builder<Wry> {
     let builder = Builder::default();
-    // The single-instance plugin must be registered first.
+    // The single-instance plugin must be registered first. Its `deep-link`
+    // feature forwards deep links from the relaunch to the running instance on
+    // its own; the callback only has to raise the existing window.
     #[cfg(any(target_os = "macos", windows, target_os = "linux"))]
-    let builder = builder.plugin(tauri_plugin_single_instance::init(|_app, _args, _cwd| {}));
+    let builder = builder.plugin(tauri_plugin_single_instance::init(|app, _args, _cwd| {
+        if let Some(window) = app.get_webview_window("main") {
+            let _ = window.unminimize();
+            let _ = window.show();
+            let _ = window.set_focus();
+        }
+    }));
     let builder = builder
         .plugin(tauri_plugin_deep_link::init())
         .plugin(bridge::init());

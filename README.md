@@ -155,6 +155,110 @@ npx tauri build
 
 Tauri's bundler produces native installers for the current OS (`.dmg`/`.app`, `.msi`/`.exe`, `.deb`/`.AppImage`). Signing, updater, and target configuration live in `src-tauri/tauri.conf.json` — see the [Tauri distribution guide](https://v2.tauri.app/distribute/).
 
+## Desktop Patterns
+
+Tauri natively supports a few common desktop behaviors. These are recipes you add in your own `src-tauri/`, not platform features — the platform stays out of your way.
+
+### Start Hidden
+
+To launch without flashing an empty window (for tray-style or splash-first apps), mark the main window as hidden in `src-tauri/tauri.conf.json`:
+
+```json
+{
+  "app": {
+    "windows": [{ "label": "main", "visible": false }]
+  }
+}
+```
+
+Show it from your frontend once your app is ready, or from a tray menu (see below):
+
+```typescript
+import { getCurrentWindow } from '@tauri-apps/api/window';
+
+await getCurrentWindow().show();
+```
+
+When the user relaunches the app, the platform automatically unminimizes, shows, and focuses the existing `main` window instead of starting a second instance.
+
+### Tray Icon
+
+Switch your `src-tauri/src/main.rs` from `run` to `builder(...)`, which returns the preconfigured `tauri::Builder` so you can add a `.setup(...)` hook before starting the app:
+
+```rust
+mod generated;
+
+use tauri::{
+    menu::{Menu, MenuItem},
+    tray::TrayIconBuilder,
+    Manager,
+};
+
+fn main() {
+    capacitor_tauri::builder(generated::register_plugins)
+        .setup(|app| {
+            let show = MenuItem::with_id(app, "show", "Show", true, None::<&str>)?;
+            let hide = MenuItem::with_id(app, "hide", "Hide", true, None::<&str>)?;
+            let quit = MenuItem::with_id(app, "quit", "Quit", true, None::<&str>)?;
+            let menu = Menu::with_items(app, &[&show, &hide, &quit])?;
+
+            TrayIconBuilder::new()
+                .icon(app.default_window_icon().unwrap().clone())
+                .menu(&menu)
+                .on_menu_event(|app, event| match event.id.as_ref() {
+                    "show" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.show();
+                            let _ = window.set_focus();
+                        }
+                    }
+                    "hide" => {
+                        if let Some(window) = app.get_webview_window("main") {
+                            let _ = window.hide();
+                        }
+                    }
+                    "quit" => app.exit(0),
+                    _ => {}
+                })
+                .build(app)?;
+
+            Ok(())
+        })
+        .run(tauri::generate_context!())
+        .expect("error while running tauri application");
+}
+```
+
+The tray API needs the `tray-icon` feature on Tauri in `src-tauri/Cargo.toml`:
+
+```toml
+tauri = { version = "2", features = ["tray-icon"] }
+```
+
+### Splash Screen
+
+Add a second `splashscreen` window alongside the (hidden) `main` window in `src-tauri/tauri.conf.json`:
+
+```json
+{
+  "app": {
+    "windows": [
+      { "label": "main", "visible": false },
+      { "label": "splashscreen", "url": "splashscreen.html", "width": 400, "height": 300 }
+    ]
+  }
+}
+```
+
+Ship a `splashscreen.html` in your web assets, then close the splash and reveal the main window from your frontend once your app has booted:
+
+```typescript
+import { getCurrentWindow, Window } from '@tauri-apps/api/window';
+
+await Window.getByLabel('splashscreen').then((splash) => splash?.close());
+await getCurrentWindow().show();
+```
+
 ## Honest Limitations
 
 Read this before choosing Tauri — these are inherent trade-offs, not bugs:
