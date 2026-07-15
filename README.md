@@ -203,7 +203,7 @@ fn main() {
             let menu = Menu::with_items(app, &[&show, &hide, &quit])?;
 
             TrayIconBuilder::new()
-                .icon(app.default_window_icon().unwrap().clone())
+                .icon(app.default_window_icon().expect("window icon is configured in tauri.conf.json").clone())
                 .menu(&menu)
                 .on_menu_event(|app, event| match event.id.as_ref() {
                     "show" => {
@@ -228,6 +228,8 @@ fn main() {
         .expect("error while running tauri application");
 }
 ```
+
+The example reuses the app's window icon for the tray, which requires the `icon` entries in `tauri.conf.json` (the scaffold configures them by default).
 
 The tray API needs the `tray-icon` feature on Tauri in `src-tauri/Cargo.toml`:
 
