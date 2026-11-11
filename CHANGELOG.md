@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.1.1](https://github.com/capawesome-team/capacitor-tauri/compare/v0.1.0...v0.1.1) (2026-11-11)
+
+
+### Features
+
+* focus the main window on relaunch and add desktop pattern recipes ([#5](https://github.com/capawesome-team/capacitor-tauri/issues/5)) ([026a3a9](https://github.com/capawesome-team/capacitor-tauri/commit/026a3a9685552b098c74bbfd9ff77b0696063651))
+
 ## [0.1.0](https://github.com/capawesome-team/capacitor-tauri/compare/v0.0.1...v0.1.0) (2026-07-13)
 
 
